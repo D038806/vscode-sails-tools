@@ -1,0 +1,29 @@
+{
+	"name": "vscode-sails-tools",
+	"displayName": "vscode-sails-tools",
+	"description": "",
+	"version": "0.0.1",
+	"publisher": "felipecaputo",
+	"engines": {
+		"vscode": "^0.10.6"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.sayHello"
+	],
+	"main": "./src/extension",
+	"contributes": {
+		"commands": [{
+			"command": "extension.sayHello",
+			"title": "Hello World"
+		}]
+	},
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install"
+	},
+	"devDependencies": {
+		"vscode": "^0.11.0"
+	}
+}
