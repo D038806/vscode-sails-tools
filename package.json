@@ -11,13 +11,13 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.sayHello"
+		"onCommand:sails-tools.sails"
 	],
 	"main": "./src/extension",
 	"contributes": {
 		"commands": [{
-			"command": "extension.sayHello",
-			"title": "Hello World"
+			"command": "sails-tools.sails",
+			"title": "SailsJS"
 		}]
 	},
     "scripts": {
