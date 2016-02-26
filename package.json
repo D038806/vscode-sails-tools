@@ -1,29 +1,34 @@
 {
-	"name": "vscode-sails-tools",
-	"displayName": "vscode-sails-tools",
-	"description": "",
-	"version": "0.0.1",
-	"publisher": "felipecaputo",
-	"engines": {
-		"vscode": "^0.10.6"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:sails-tools.sails"
-	],
-	"main": "./src/extension",
-	"contributes": {
-		"commands": [{
-			"command": "sails-tools.sails",
-			"title": "SailsJS"
-		}]
-	},
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install"
-	},
-	"devDependencies": {
-		"vscode": "^0.11.0"
-	}
+  "name": "vscode-sails-tools",
+  "displayName": "Sails Tools",
+  "description": "An amazing extension to work with SailsJS apps!",
+  "version": "0.0.1",
+  "publisher": "felipecaputo",
+  "engines": {
+    "vscode": "^0.10.6"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:sails-tools.sails"
+  ],
+  "main": "./src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "sails-tools.sails",
+        "title": "SailsJS"
+      }
+    ]
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "vscode": "^0.11.0"
+  },
+  "dependencies": {
+    "jsonfile": "^2.2.3"
+  }
 }

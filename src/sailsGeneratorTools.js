@@ -10,6 +10,7 @@ const MODELS = 'Model', API = 'API', CONTROLLER = 'Controller';
 const GEN_OPTIONS = [MODELS, API, CONTROLLER];
 const CONTROLLERS_FOLDER = 'api/controllers';
 const CONTROLLER_SUFFIX = 'Controller';
+const MODELS_FOLDER = 'api/models';
 
 /**
  * @description Open the refered file in editor if exists, else shows an error message
@@ -21,7 +22,9 @@ function openFileInEditor(filePath, kindOfFile) {
     if (!filePath) return;
     if (!fs.existsSync(String(filePath))) {
         vscode.window.showErrorMessage('New ' + kindOfFile + ' file not found!');
+        return;
     }
+
     vscode.workspace.openTextDocument(filePath + '')
         .then((document) => {
             vscode.window.showTextDocument(document);
@@ -34,9 +37,9 @@ function openFileInEditor(filePath, kindOfFile) {
  */
 function buildFilePath(relativeFolder, fileName, shouldCapitalize) {
     if (shouldCapitalize == undefined) shouldCapitalize = true;
-    
+
     let _fileName = shouldCapitalize ? utils.capitalizeFirstLetter(fileName) : fileName;
-    return path.join(vscode.workspace.rootPath, relativeFolder, _fileName + '.js')    
+    return path.join(vscode.workspace.rootPath, relativeFolder, _fileName + '.js')
 }
 
 /**
@@ -50,18 +53,19 @@ function executeModelGenerator() {
             if (!modelName) return;
 
             generateModel(modelName)
-                .then( filePath => {
+                .then(filePath => {
                     openFileInEditor(filePath, 'Model');
                 });
         })
 }
+
 /**
  * @description Executes the given generator and returns the stdout as the resolution of the promise
  * @param  {string} generatorName
  * @param  {string} paramName
  * @return {Promise}
  */
-function executeGenerator (generatorName, paramName) {
+function executeGenerator(generatorName, paramName) {
     return new Promise((resolve, reject) => {
         let projectPath = vscode.workspace.rootPath;
         let options = {
@@ -69,7 +73,7 @@ function executeGenerator (generatorName, paramName) {
             'encoding': 'utf8'
         };
 
-        var command = 'sails generate ' + generatorName + ' '  + paramName;
+        var command = 'sails generate ' + generatorName + ' ' + paramName;
 
         cp.exec(command, options, (err, stdout, stderr) => {
             if (err) {
@@ -79,20 +83,32 @@ function executeGenerator (generatorName, paramName) {
             }
         });
 
-    });    
+    });
 }
 
-function executeControllerGenerator() {    
+function executeControllerGenerator() {
     vscode.window.showInputBox({ prompt: 'Choose your Controller name:' })
         .then((controllerName) => {
             if (!controllerName) return;
 
             executeGenerator('controller', controllerName)
-                .then( stdout => {
-                    openFileInEditor(buildFilePath(CONTROLLERS_FOLDER, controllerName + CONTROLLER_SUFFIX), 'Controller');
+                .then(stdout => {
+                    openFileInEditor(buildFilePath(CONTROLLERS_FOLDER, controllerName + CONTROLLER_SUFFIX), CONTROLLER);
                 });
         })
 }
+
+function executeApiGenerator() {
+    vscode.window.showInputBox({ prompt: 'Choose your API name:' })
+        .then((apiName) => {
+            if (!apiName) return;
+
+            executeGenerator('api', apiName)
+                .then(stdout => {
+                    openFileInEditor(buildFilePath(MODELS_FOLDER, apiName), API);
+                });
+        });
+};
 
 
 /**
@@ -102,23 +118,11 @@ function executeControllerGenerator() {
  */
 function generateModel(modelName) {
     return new Promise((resolve, reject) => {
-        let projectPath = vscode.workspace.rootPath;
-        let options = {
-            'cwd': projectPath,
-            'encoding': 'utf8'
-        };
-
-        var command = 'sails generate model ' + modelName;
-
-        cp.exec(command, options, (err, stdout, stderr) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(path.join(projectPath, 'api/models', utils.capitalizeFirstLetter(modelName) + '.js'));
-            }
+        executeGenerator('model', modelName)
+            .then(stdout => {
+                openFileInEditor(buildFilePath(MODELS_FOLDER, modelName), MODELS);
+            });
         });
-
-    });
 };
 
 /**
@@ -137,9 +141,13 @@ exports.selectGenerator = () => {
                 case CONTROLLER:
                     executeControllerGenerator();
                     break;
+                case API:
+                    executeApiGenerator();
+                    break;
 
                 default:
-                    break;
+                    throw 'Invalid generator option.';
+                    break; //throw error
             }
         })
 };
